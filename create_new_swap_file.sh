@@ -27,7 +27,7 @@ ADD_SWAP_TO_FSTAB() {
 echo "add swap fs to fstab"
 if (( CHK_SW == 1  ))
     then
-         sed -i 's/$SWPATH/$DIR\/$SWNAME|g' /etc/fstab
+         sed -i 's/\/swapfile/\/datadrive\/swapfile/g' /etc/fstab
     else
          echo "$DIR/$SWNAME none swap sw 0 0"    >> /etc/fstab
 fi
