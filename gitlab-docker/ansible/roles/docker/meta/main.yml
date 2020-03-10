@@ -1,0 +1,9 @@
+galaxy_info:
+  author: Agafonov Andrey 
+  description: Playbook for install Docker on Centos ditr
+  company: cloud16.ru
+  license: license (GPLv2, CC-BY, etc)
+  min_ansible_version: 1.0
+  galaxy_tags: []
+dependencies: 
+  - role: prepare

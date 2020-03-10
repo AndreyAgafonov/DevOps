@@ -1,0 +1,9 @@
+---
+# defaults file for nginx
+prepare_pakages:
+  - lsof
+  - wget
+  - python-pip
+
+#    - python
+#    - python-apt

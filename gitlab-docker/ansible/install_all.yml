@@ -1,0 +1,9 @@
+---
+  - name: Install docker
+    hosts: gitLABServer
+    become: true
+    gather_facts: True
+
+
+    roles:
+      - gitlab

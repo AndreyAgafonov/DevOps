@@ -1,0 +1,77 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+
+MACHINES = {
+  :gitLABServer => {
+          :box_name => "centos/7",
+          #:public => {:ip => '10.10.10.1', :adapter => 1},
+          :net => [
+                   {ip: '192.168.77.10', adapter: 2, netmask: "255.255.255.0"},
+                ]
+  },
+
+  #:ansible => { #must be last
+  #        :box_name => "centos/7",
+  #        :net => [
+  #                  {ip: '192.168.77.2', adapter: 2, netmask: "255.255.255.0"},
+                    #{ip: '10.123.19.10', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "net1-2"},
+                    #{ip: '10.123.18.10', adapter: 4, netmask: "255.255.255.0", virtualbox__intnet: "net2-3"},
+  #              ],
+
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+    config.vm.define boxname do |box|
+
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+
+        box.vm.provider :virtualbox do |vb|
+          vb.customize ["modifyvm", :id, "--memory", "4096"]
+          vb.customize ["modifyvm", :id, "--cpus", "4"]
+          vb.name = boxname.to_s
+          end
+
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+        bash +x /vagrant/provision.sh
+        SHELL
+
+        case boxname.to_s
+
+            when "gitLABServer"
+              box.vm.provision "shell", run: "always", inline: <<-SHELL
+                #ip route delete default 2>&1 >/dev/null || true
+                #ip route add default via 172.19.1.1 #2>&1 >/dev/null || true
+                SHELL
+
+#          when "ansible"
+#            provision_path = './' + boxname.to_s
+#            provision_script = provision_path +  '/provision.sh'
+#            provision_work_dir= '/vagrant/' + boxname.to_s
+#            provision_box_name= boxname.to_s
+#            box.vm.provision "shell", run: "always", path: provision_script
+            end
+
+          end
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "./ansible/install_all.yml"
+    ansible.config_file = "./ansible/ansible.cfg"
+    ansible.inventory_path = "./ansible/inventory/hosts"
+    end
+end

@@ -1,0 +1,28 @@
+---
+# tasks file for nginx
+ - name: PREPARE | Prepare virtual machine
+   block:
+    - name: Install Repo EPEL-Release
+      yum:
+        name: epel-release
+        state: present
+      tags:
+        - epel-package
+        - packages
+
+    - name: PREPARE | Install python packages
+      shell: "yum install -y python python-apt"
+
+    - name: PREPARE | Install packages
+      yum:
+        name: "{{ item }}"
+        state: latest
+      loop:
+      - "{{ prepare_pakages }}"
+#       Оставил образец, есди после установки пакета нужно перезапустить какой то сервис.
+#      notify:
+#        - restart nginx
+      tags:
+        - nginx-package
+        - packages
+   when: ansible_facts['distribution'] == 'CentOS'

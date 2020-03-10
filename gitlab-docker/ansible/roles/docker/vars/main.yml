@@ -1,0 +1,8 @@
+---
+# vars file for nginx
+  #ansible_user: vagrant
+  #ansible_ssh_private_key_file: /vagrant/ansible.pem
+  #ansible_ssh_private_key_file: /home/vagrant/.ssh/id_rsa
+  #nginx_listen_port: 8080
+  #nginx_root_dir: /usr/share/nginx/html
+  
